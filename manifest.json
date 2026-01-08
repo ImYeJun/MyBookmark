@@ -1,0 +1,13 @@
+{
+    "manifest_version" : 3,
+    "name" : "My Bookmark",
+    "version" : "0.0.1",
+    "description" : "Open your favorite websites!",
+
+    "background" : {
+        "service_worker" : "service_worker.js"
+    },
+    "action" : {
+        "default_popup" : "popup.html"
+    }
+}
