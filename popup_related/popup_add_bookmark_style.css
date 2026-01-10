@@ -1,0 +1,80 @@
+#ContentBox{
+    flex: 1;
+    border-radius: 10px;
+
+    display: flex;
+
+    background-color: var(--box-background-color);
+}
+
+#Form{
+    flex : 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    margin : 0px 10px
+}
+
+#GoBackButton{
+    border: none;
+    background: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    top : 16px;
+    left: 10px;
+}
+#GoBackButton:hover{
+    cursor: pointer;
+}
+#GoBackButton img{
+    width: 32px;
+    height: 32px;
+}
+
+.FormField .InputBoxHeader{
+    font-size: large;
+    font-weight: bold;
+}
+.FormField .InputBox{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 28px;
+
+    background-color: var(--form-input-box-background-color);
+    border-radius: 10px;
+}
+.FormField .InputBox input{
+    font-size: medium;
+
+    border : none;
+    background : none;
+}
+
+
+#SubmitButton{
+    border: none;
+    background : none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: auto;
+    margin-top: 6px;
+}
+#SubmitButton:hover{
+    cursor: pointer;
+}
+#SubmitButton img{
+    width: 24px;
+    height: 24px;
+}

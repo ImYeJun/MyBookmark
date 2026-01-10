@@ -1,0 +1,21 @@
+:root{
+    --background-color : #dddddd;
+    --box-background-color : #ffffff;
+    --form-input-box-background-color : #bbbbbb;
+}
+
+html, body {
+    width: 250px;
+    height: 400px;
+    margin : 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color);
+
+    box-sizing: border-box;
+    padding: 7px 8px;
+}

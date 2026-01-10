@@ -8,6 +8,6 @@
         "service_worker" : "service_worker.js"
     },
     "action" : {
-        "default_popup" : "popup.html"
+        "default_popup" : "/popup_related/popup_default.html"
     }
 }
