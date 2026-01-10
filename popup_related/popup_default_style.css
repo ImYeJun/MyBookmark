@@ -27,7 +27,7 @@ body{
     font-size: medium;
     box-sizing: border-box;
 }
-#SearchBox button {
+#SearchButton {
     flex: 1;
     border: none;
     background: none;
@@ -36,10 +36,10 @@ body{
     align-items: center;    
     justify-content: center; 
 }
-#SearchBox button:hover{
+#SearchButton:hover{
     cursor: pointer;
 }
-#SearchBox button img{
+#SearchButton img{
     width: 20px;
     height: 20px;
 }
