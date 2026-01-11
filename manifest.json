@@ -9,5 +9,6 @@
     },
     "action" : {
         "default_popup" : "/popup_related/popup_default.html"
-    }
+    },
+    "permissions": ["storage"]
 }

@@ -7,11 +7,11 @@ document.addEventListener("DOMContentLoaded", () =>{
 
     searchButton = document.getElementById("SearchButton")
     searchButton.addEventListener("click", ()=>{
-        searchKey()
+        searchElement()
     })
 })
 
-function searchKey() {
+function searchElement() {
     searchBox = document.getElementById("SearchBox")
 
     inputField = searchBox.querySelector("input")
