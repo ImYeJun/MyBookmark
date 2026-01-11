@@ -2,6 +2,8 @@
     --background-color : #dddddd;
     --box-background-color : #ffffff;
     --form-input-box-background-color : #bbbbbb;
+    --success-color : #50c878;
+    --fail-color : #dc143c;
 }
 
 html, body {
