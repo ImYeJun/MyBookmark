@@ -7,14 +7,65 @@ document.addEventListener("DOMContentLoaded", () =>{
 
     searchButton = document.getElementById("SearchButton")
     searchButton.addEventListener("click", ()=>{
-        searchElement()
+        searchBookmarks()
     })
 })
 
-function searchElement() {
+async function searchBookmarks() {
     searchBox = document.getElementById("SearchBox")
 
     inputField = searchBox.querySelector("input")
     inputKey = inputField.value
-    console.log(`Input Key : ${inputKey}`)
+    
+    result = await chrome.runtime.sendMessage({ event_key : "GET_BOOKMARKS" , name : inputKey})
+    
+    if (result.isSuccess){
+        var contentBox = document.getElementById("BookmarksBox")
+        while (contentBox.firstChild) { contentBox.removeChild(contentBox.firstChild); }
+        
+        for (var bookmarkData of result.bookmarks){
+            let key = bookmarkData.key;
+            let name = bookmarkData.name
+            let url = bookmarkData.url
+
+            let bookmarkBox = document.createElement("div")
+            bookmarkBox.role = "button";
+            bookmarkBox.tabIndex = 0;
+
+            bookmarkBox.classList.add("BookmarkBox")
+            bookmarkBox.setAttribute("hashcode", key)
+            bookmarkBox.setAttribute("name", name)
+            bookmarkBox.setAttribute("url", url)
+            bookmarkBox.addEventListener("click", ()=>{
+                chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+                    chrome.tabs.update(tabs[0].id, { url: url });
+                });
+            })
+            //TODO : Refactor this fucking hack
+            bookmarkBox.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault(); // Space 스크롤 방지
+                    bookmarkBox.click();
+                }
+            });
+
+            let nameBox = document.createElement("div")
+            nameBox.id = "Name"
+            nameBox.textContent = name;
+
+            let urlBox = document.createElement("div")
+            urlBox.id = "Url"
+            urlBox.textContent = url;
+            
+            bookmarkBox.appendChild(nameBox);
+            bookmarkBox.appendChild(urlBox);
+            contentBox.appendChild(bookmarkBox);
+
+        }
+        return true;
+    }
+    else{
+        console.error("Failed to get bookmarks")
+        return false;
+    }
 }

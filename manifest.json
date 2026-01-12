@@ -5,10 +5,11 @@
     "description" : "Open your favorite websites!",
 
     "background" : {
-        "service_worker" : "service_worker.js"
+        "service_worker" : "service_worker.js",
+        "type": "module"
     },
     "action" : {
         "default_popup" : "/popup_related/popup_default.html"
     },
-    "permissions": ["storage"]
+    "permissions": ["storage", "tabs"]
 }
