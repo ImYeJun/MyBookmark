@@ -24,43 +24,7 @@ async function searchBookmarks() {
         while (contentBox.firstChild) { contentBox.removeChild(contentBox.firstChild); }
         
         for (var bookmarkData of result.bookmarks){
-            let key = bookmarkData.key;
-            let name = bookmarkData.name
-            let url = bookmarkData.url
-
-            let bookmarkBox = document.createElement("div")
-            bookmarkBox.role = "button";
-            bookmarkBox.tabIndex = 0;
-
-            bookmarkBox.classList.add("BookmarkBox")
-            bookmarkBox.setAttribute("hashcode", key)
-            bookmarkBox.setAttribute("name", name)
-            bookmarkBox.setAttribute("url", url)
-            bookmarkBox.addEventListener("click", ()=>{
-                chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-                    chrome.tabs.update(tabs[0].id, { url: url });
-                });
-            })
-            //TODO : Refactor this fucking hack
-            bookmarkBox.addEventListener("keydown", (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault(); // Space 스크롤 방지
-                    bookmarkBox.click();
-                }
-            });
-
-            let nameBox = document.createElement("div")
-            nameBox.id = "Name"
-            nameBox.textContent = name;
-
-            let urlBox = document.createElement("div")
-            urlBox.id = "Url"
-            urlBox.textContent = url;
-            
-            bookmarkBox.appendChild(nameBox);
-            bookmarkBox.appendChild(urlBox);
-            contentBox.appendChild(bookmarkBox);
-
+            createBookmarkBox(bookmarkData, contentBox)
         }
         return true;
     }
@@ -69,3 +33,59 @@ async function searchBookmarks() {
         return false;
     }
 }
+
+function createBookmarkBox(bookmarkData, parentBox) {
+    let key = bookmarkData.key
+    let name = bookmarkData.name
+    let url = bookmarkData.url
+
+    let bookmarkBox = document.createElement("div")
+    bookmarkBox.role = "button"
+    bookmarkBox.tabIndex = 0
+
+    bookmarkBox.classList.add("BookmarkBox")
+    bookmarkBox.setAttribute("hashcode", key)
+    bookmarkBox.setAttribute("name", name)
+    bookmarkBox.setAttribute("url", url)
+    bookmarkBox.addEventListener("click", () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.update(tabs[0].id, { url: url })
+        })
+    })
+    //TODO : Refactor this fucking hack
+    bookmarkBox.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault() // Space 스크롤 방지
+            bookmarkBox.click()
+        }
+    })
+
+    let deleteButton = document.createElement("button")
+    deleteButton.id = "DeleteButton"
+    let deleteButtonImg = document.createElement("img")
+    deleteButtonImg.src = "/assets/delete_icon.png"
+    
+    deleteButton.appendChild(deleteButtonImg)
+    deleteButton.addEventListener("click", async (e) => {
+        e.stopPropagation()
+        let isSuccess = await chrome.runtime.sendMessage({ event_key : "REMOVE_BOOKMARK", hashcode : key})
+
+        if (isSuccess){
+            bookmarkBox.remove();
+        }   
+    })
+
+    let nameBox = document.createElement("div")
+    nameBox.id = "Name"
+    nameBox.textContent = name
+
+    let urlBox = document.createElement("div")
+    urlBox.id = "Url"
+    urlBox.textContent = url
+
+    bookmarkBox.appendChild(nameBox)
+    bookmarkBox.appendChild(urlBox)
+    bookmarkBox.appendChild(deleteButton)
+    parentBox.appendChild(bookmarkBox)
+}
+

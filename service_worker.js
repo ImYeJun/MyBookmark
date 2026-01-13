@@ -2,7 +2,8 @@ import { isValidHttpUrl, sortBookmark } from "./utility.js";
 
 const messageHandlers = {
     "ADD_BOOKMARK" : handleAddBookmark,
-    "GET_BOOKMARKS" : handleGetBookmarks
+    "GET_BOOKMARKS" : handleGetBookmarks,
+    "REMOVE_BOOKMARK" : handleRemoveBookmark
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -72,4 +73,15 @@ async function handleGetBookmarks(request, sender, sendResponse) {
         sendResponse({ isSuccess: false, bookmarks: [] })
         return false
     }
+}
+
+async function handleRemoveBookmark(request, sender, sendResponse) {
+    if (!request || !request?.hashcode){
+        sendResponse({ isSuccess: false, subText: "Invalid Request" });
+        return false;
+    }
+
+    chrome.storage.sync.remove(request.hashcode);
+    sendResponse(true);
+    return true;
 }

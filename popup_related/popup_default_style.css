@@ -50,6 +50,7 @@ body{
     border-radius: 10px;
 
     padding: 10px 7px;
+    overflow: auto;
 }
 #ContentBox button {
     border: none;
@@ -81,6 +82,9 @@ body{
     cursor: pointer;
 }
 .BookmarkBox{
+    display: flex;
+    flex-direction: column;
+
     left : 0;
     right : 0;
     height: auto;
@@ -92,10 +96,31 @@ body{
 .BookmarkBox:hover{
     background-color: rgb(253, 208, 215);
 }
+.BookmarkBox:has(#DeleteButton img:hover){
+    background-color: pink; /* 기본색으로 되돌림 */
+}
 .BookmarkBox #Name{
     font-size: large;
     font-weight: bold;
 }
 .BookmarkBox #Url{
     text-decoration: underline;
+    overflow: auto;
+}
+.BookmarkBox #DeleteButton{
+    all: unset;  /* TODO : refactor this fuccking shit */
+    display: block;
+
+    display: flex;
+    align-items: center;
+    /* align-self: flex-end; */
+
+    margin-top: 5px;
+}
+.BookmarkBox #DeleteButton img:hover{
+    background-color: aliceblue;
+}
+.BookmarkBox #DeleteButton img{
+    width: 16px;
+    height: 16px;
 }
