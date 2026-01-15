@@ -52,7 +52,7 @@ body{
     padding: 10px 7px;
     overflow: auto;
 }
-#ContentBox button {
+#ContentBox #AddBoomarkButton {
     border: none;
     background: none;
 
@@ -64,10 +64,10 @@ body{
     bottom: 16px;
     right: 16px;
 }
-#ContentBox button:hover{
+#ContentBox #AddBoomarkButton:hover{
     cursor: pointer;
 }
-#ContentBox button img{
+#ContentBox #AddBoomarkButton img{
     width: 32px;
     height: 32px;
 }
@@ -99,9 +99,37 @@ body{
 .BookmarkBox:has(#DeleteButton img:hover){
     background-color: pink; /* 기본색으로 되돌림 */
 }
-.BookmarkBox #Name{
+.BookmarkBox:has(#SettingButton img:hover){
+    background-color: pink; /* 기본색으로 되돌림 */
+}
+.BookmarkBox #UpperBox{
+    display: flex;
+    
+    flex-direction: row;
+    justify-content: space-between;
+}
+.BookmarkBox #UpperBox #SettingButton{
+    all: unset;  /* TODO : refactor this fuccking shit */
+    display: inline;
+
+    display: flex;
+    align-items: center;
+}
+.BookmarkBox #SettingButton img{
+    width: 18px;
+    height: 18px;
+}
+.BookmarkBox #SettingButton img:hover{
+    background-color: aliceblue;
+}
+
+.BookmarkBox #UpperBox #Name{
+    display: inline-block;
     font-size: large;
     font-weight: bold;
+    min-width: 0;
+    
+    overflow: auto;
 }
 .BookmarkBox #Url{
     text-decoration: underline;

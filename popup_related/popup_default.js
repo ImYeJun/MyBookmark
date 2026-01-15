@@ -16,11 +16,11 @@ document.addEventListener("DOMContentLoaded", () =>{
 
     document.addEventListener("keydown", (e)=>{
         if (e.key == "ArrowDown"){
-            onArrowKey(e, "Down")
+            onArrowKeyPressed(e, "Down")
         }
         
         if (e.key == "ArrowUp"){
-            onArrowKey(e, "Up")
+            onArrowKeyPressed(e, "Up")
         }
 
         pressedKeys.add(e.key);
@@ -41,7 +41,7 @@ async function searchBookmarks() {
     inputField = searchBox.querySelector("input")
     inputKey = inputField.value
     
-    result = await chrome.runtime.sendMessage({ event_key : "GET_BOOKMARKS" , name : inputKey})
+    result = await chrome.runtime.sendMessage({ event_key : "GET_BOOKMARKS_BY_NAME" , name : inputKey})
     
     if (result.isSuccess){
         var contentBox = document.getElementById("BookmarksBox")
@@ -115,13 +115,12 @@ function createBookmarkBox(bookmarkData, parentBox) {
 
     let deleteButton = document.createElement("button")
     deleteButton.id = "DeleteButton"
-
     let deleteButtonImg = document.createElement("img")
     deleteButtonImg.src = "/assets/delete_icon.png"
-    
     deleteButton.appendChild(deleteButtonImg)
-    deleteButton.addEventListener("click", async (e) => {
+    deleteButton.addEventListener("mousedown", async (e) => {
         e.stopPropagation()
+        e.preventDefault()
         let isSuccess = await chrome.runtime.sendMessage({ event_key : "REMOVE_BOOKMARK", hashcode : key})
 
         if (isSuccess){
@@ -130,23 +129,41 @@ function createBookmarkBox(bookmarkData, parentBox) {
     })
     deleteButton.tabIndex = -1
 
+    let uppderBox = document.createElement("div")
+    uppderBox.id = "UpperBox"
+
     let nameBox = document.createElement("div")
     nameBox.id = "Name"
     nameBox.textContent = name
     nameBox.tabIndex = -1
 
+    let settingButton = document.createElement("button")
+    settingButton.id = "SettingButton"
+    let settingButtonImg = document.createElement("img")
+    settingButtonImg.src = "/assets/setting_icon.png"
+    settingButton.appendChild(settingButtonImg)
+    settingButton.addEventListener("mousedown", (e)=>{
+        e.stopPropagation()
+        e.preventDefault()
+
+        openBookmarkSettingModal(key)
+    })
+    settingButton.tabIndex = -1
+
     let urlBox = document.createElement("div")
     urlBox.id = "Url"
     urlBox.textContent = url
     urlBox.tabIndex = -1
-
-    bookmarkBox.appendChild(nameBox)
+    
+    uppderBox.appendChild(nameBox)
+    uppderBox.appendChild(settingButton)
+    bookmarkBox.appendChild(uppderBox)
     bookmarkBox.appendChild(urlBox)
     bookmarkBox.appendChild(deleteButton)
     parentBox.appendChild(bookmarkBox)
 }
 
-function onArrowKey(e, direction){
+function onArrowKeyPressed(e, direction){
     boxes = bookmarkBoxes();
     currentIndex = boxes.indexOf(document.activeElement)
 
@@ -167,4 +184,8 @@ function onArrowKey(e, direction){
         nextBox = boxes[nextIndex]
         if (nextBox) nextBox.focus()
     }
+}
+
+async function openBookmarkSettingModal(bookmarkHashcode){
+    let bookmark = await chrome.runtime.sendMessage({ event_key : "GET_BOOKMARK_BY_HASHCODE" , hashcode : bookmarkHashcode})
 }

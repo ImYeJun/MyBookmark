@@ -30,7 +30,6 @@ async function submitForm() {
     else displayAlaram("Fail", result.subText)
 }
 
-
 let alarmTimer = null;
 const ALARM_DUATION = 5000;
 function displayAlaram(type, subTextContent){

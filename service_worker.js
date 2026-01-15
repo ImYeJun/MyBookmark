@@ -2,7 +2,8 @@ import { isValidHttpUrl, sortBookmark } from "./utility.js";
 
 const messageHandlers = {
     "ADD_BOOKMARK" : handleAddBookmark,
-    "GET_BOOKMARKS" : handleGetBookmarks,
+    "GET_BOOKMARKS_BY_NAME" : handleGetBookmarksByName,
+    "GET_BOOKMARK_BY_HASHCODE" : handleGetBookmarkByHashcode,
     "REMOVE_BOOKMARK" : handleRemoveBookmark
 }
 
@@ -49,7 +50,7 @@ async function handleAddBookmark(request, sender, sendResponse){
     return true;
 }
 
-async function handleGetBookmarks(request, sender, sendResponse) {
+async function handleGetBookmarksByName(request, sender, sendResponse) {
     try {
         const keys = await chrome.storage.sync.getKeys()
         const bookmarks = []
@@ -71,6 +72,24 @@ async function handleGetBookmarks(request, sender, sendResponse) {
     } catch (e) {
         console.error(e)
         sendResponse({ isSuccess: false, bookmarks: [] })
+        return false
+    }
+}
+
+async function handleGetBookmarkByHashcode(request, sender, sendResponse){
+    try{
+        let bookmark = await chrome.storage.sync.get(request.hashcode)
+
+        if (bookmark) { 
+            sendResponse(bookmark[request.hashcode])
+        }
+        else { sendResponse(null) }
+        
+        return true;
+    }
+    catch (e){
+        console.error(e)
+        sendResponse(null)
         return false
     }
 }
