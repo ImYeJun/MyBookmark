@@ -1,3 +1,7 @@
+const pressedKeys = new Set()
+let openShortCutFired = false;
+const bookmarkBoxes = () => Array.from(document.querySelectorAll(".BookmarkBox"))
+
 document.addEventListener("DOMContentLoaded", () =>{
     addBookmarkButton = document.getElementById("AddBoomarkButton")
 
@@ -9,6 +13,26 @@ document.addEventListener("DOMContentLoaded", () =>{
     searchButton.addEventListener("click", ()=>{
         searchBookmarks()
     })
+
+    document.addEventListener("keydown", (e)=>{
+        if (e.key == "ArrowDown"){
+            onArrowKey(e, "Down")
+        }
+        
+        if (e.key == "ArrowUp"){
+            onArrowKey(e, "Up")
+        }
+
+        pressedKeys.add(e.key);
+        if (pressedKeys.has("Enter")){
+            handleShortCutInput()
+        }
+    })
+    
+    document.addEventListener("keyup", (e) => {
+        pressedKeys.delete(e.key);
+        openShortCutFired = false;
+    });
 })
 
 async function searchBookmarks() {
@@ -34,6 +58,33 @@ async function searchBookmarks() {
     }
 }
 
+function handleShortCutInput(){
+    if (openShortCutFired) return;
+
+    url = document.activeElement.classList.contains("BookmarkBox") ? document.activeElement.getAttribute("url") : ""
+    if (url === ""){
+        return;
+    }
+    else if (pressedKeys.has("Shift")){
+        chrome.windows.create({
+            url: url,
+            type: "normal"
+        });
+        pressedKeys.clear();
+    }
+    else if (pressedKeys.has("Control")){
+        chrome.tabs.create({
+            url: url    
+        });
+    }
+    else{
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.update(tabs[0].id, { url: url })
+        })
+    }
+    openShortCutFired = true;
+}
+
 function createBookmarkBox(bookmarkData, parentBox) {
     let key = bookmarkData.key
     let name = bookmarkData.name
@@ -47,21 +98,24 @@ function createBookmarkBox(bookmarkData, parentBox) {
     bookmarkBox.setAttribute("hashcode", key)
     bookmarkBox.setAttribute("name", name)
     bookmarkBox.setAttribute("url", url)
-    bookmarkBox.addEventListener("click", () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            chrome.tabs.update(tabs[0].id, { url: url })
-        })
-    })
-    //TODO : Refactor this fucking hack
-    bookmarkBox.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault() // Space 스크롤 방지
-            bookmarkBox.click()
+    bookmarkBox.addEventListener("mousedown", (e) => {
+        if (e.button == 0){
+            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                chrome.tabs.update(tabs[0].id, { url: url })
+            })
+        }
+        else if (e.button == 1){
+            chrome.tabs.create({
+                url: url    
+            });
         }
     })
+    if (parentBox.firstChild) bookmarkBox.tabIndex = -1
+    else bookmarkBox.tabIndex = 0
 
     let deleteButton = document.createElement("button")
     deleteButton.id = "DeleteButton"
+
     let deleteButtonImg = document.createElement("img")
     deleteButtonImg.src = "/assets/delete_icon.png"
     
@@ -74,14 +128,17 @@ function createBookmarkBox(bookmarkData, parentBox) {
             bookmarkBox.remove();
         }   
     })
+    deleteButton.tabIndex = -1
 
     let nameBox = document.createElement("div")
     nameBox.id = "Name"
     nameBox.textContent = name
+    nameBox.tabIndex = -1
 
     let urlBox = document.createElement("div")
     urlBox.id = "Url"
     urlBox.textContent = url
+    urlBox.tabIndex = -1
 
     bookmarkBox.appendChild(nameBox)
     bookmarkBox.appendChild(urlBox)
@@ -89,3 +146,25 @@ function createBookmarkBox(bookmarkData, parentBox) {
     parentBox.appendChild(bookmarkBox)
 }
 
+function onArrowKey(e, direction){
+    boxes = bookmarkBoxes();
+    currentIndex = boxes.indexOf(document.activeElement)
+
+    e.preventDefault()
+    if (direction == "Up"){
+        let prevIndex
+        if (currentIndex == -1) { prevIndex = boxes.length - 1 }
+        else { prevIndex = currentIndex == 0 ? boxes.length - 1 : currentIndex - 1 }
+
+        prevBox = boxes[prevIndex]
+        if (prevBox) prevBox.focus()
+    }
+    else if (direction == "Down"){
+        let nextIndex
+        if (currentIndex == -1) { nextIndex = 0 }
+        else { nextIndex = currentIndex == boxes.length - 1 ? 0 : currentIndex + 1 }
+
+        nextBox = boxes[nextIndex]
+        if (nextBox) nextBox.focus()
+    }
+}
